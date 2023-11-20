@@ -1,4 +1,6 @@
 import { db } from "../database/conn.js";
+import jwt from 'jsonwebtoken';
+
 
 const autenticacion = async (req, res) => {
 
@@ -18,7 +20,16 @@ const autenticacion = async (req, res) => {
 
     if (result.length > 0) {
 
-        res.json({ mesaje: "autenticacion exitosa" })
+        const payload = {
+            user_name: result[0].user_name,
+            email: result[0].email,
+            id_role: result[0].id_role
+        }
+
+        const token = jwt.sign(payload, 'secret', { expiresIn: '1h' });
+
+        res.json({ token })
+
     } else {
 
         res.status(404).json({ mesaje: "autenticacion no exitosa" })
